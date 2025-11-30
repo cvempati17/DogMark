@@ -36,7 +36,13 @@ async def convert_file(file: UploadFile = File(...)):
         else:
             raise HTTPException(status_code=400, detail="Unsupported file type. Please upload .doc or .docx")
             
-        return JSONResponse(content={"markdown": markdown_content})
+        # Get filename without extension
+        base_name = os.path.splitext(file.filename)[0]
+            
+        return JSONResponse(content={
+            "markdown": markdown_content,
+            "filename": base_name
+        })
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

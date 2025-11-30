@@ -7,6 +7,7 @@ import { FiLoader } from 'react-icons/fi';
 
 function App() {
   const [markdown, setMarkdown] = useState(null);
+  const [filename, setFilename] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -25,6 +26,7 @@ function App() {
         },
       });
       setMarkdown(response.data.markdown);
+      setFilename(response.data.filename);
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.detail || "An error occurred during conversion.");
@@ -35,6 +37,7 @@ function App() {
 
   const handleReset = () => {
     setMarkdown(null);
+    setFilename(null);
     setError(null);
   };
 
@@ -66,7 +69,7 @@ function App() {
                 <p className="text-[#5f6368]">Processing your document...</p>
               </motion.div>
             ) : markdown ? (
-              <Preview key="preview" markdown={markdown} onReset={handleReset} />
+              <Preview key="preview" markdown={markdown} filename={filename} onReset={handleReset} />
             ) : (
               <div className="space-y-6">
                 <FileUpload key="upload" onFileUpload={handleFileUpload} isUploading={loading} />

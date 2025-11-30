@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { FiDownload, FiCopy, FiCheck } from 'react-icons/fi';
 
-const Preview = ({ markdown, onReset }) => {
+const Preview = ({ markdown, filename, onReset }) => {
     const [copied, setCopied] = React.useState(false);
 
     const handleCopy = () => {
@@ -17,7 +17,7 @@ const Preview = ({ markdown, onReset }) => {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'converted.md';
+        a.download = `${filename || 'converted'}.md`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
