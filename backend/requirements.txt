@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+python-multipart
+mammoth
+markdownify
+pywin32; sys_platform == 'win32'
