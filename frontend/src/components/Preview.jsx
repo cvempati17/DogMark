@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { FiDownload, FiCopy, FiCheck } from 'react-icons/fi';
 
-const Preview = ({ markdown, filename, onReset }) => {
+const Preview = ({ markdown, filename, zipBase64, onReset }) => {
     const [copied, setCopied] = React.useState(false);
 
     const handleCopy = () => {
@@ -12,16 +12,36 @@ const Preview = ({ markdown, filename, onReset }) => {
     };
 
     const handleDownload = () => {
-        // Add BOM for Windows compatibility
-        const blob = new Blob(['\uFEFF', markdown], { type: 'text/markdown;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${filename || 'converted'}.md`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+        if (zipBase64) {
+            // Download ZIP file
+            const byteCharacters = atob(zipBase64);
+            const byteNumbers = new Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            const byteArray = new Uint8Array(byteNumbers);
+            const blob = new Blob([byteArray], { type: 'application/zip' });
+
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${filename || 'converted'}.zip`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        } else {
+            // Fallback: Download Markdown file
+            const blob = new Blob(['\uFEFF', markdown], { type: 'text/markdown;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${filename || 'converted'}.md`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
     };
 
     return (
@@ -48,7 +68,7 @@ const Preview = ({ markdown, filename, onReset }) => {
                         onClick={handleDownload}
                         className="btn-primary flex items-center gap-2 text-sm"
                     >
-                        <FiDownload /> Download .md
+                        <FiDownload /> {zipBase64 ? "Download .zip" : "Download .md"}
                     </motion.button>
                     <motion.button
                         whileHover={{ scale: 1.05 }}
